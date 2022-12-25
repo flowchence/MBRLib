@@ -1,11 +1,10 @@
 ## Introduction (23/02/2017)
 A small assembly library I wrote specifically for anyone who doesn't understand x86 assembly and wants to modify the MBR. The library contains common instructions represented as macros.
-
 ## Main file
 ```assembly
 %include "include\console.asm"
 %include "include\graphics.asm" ; Drawing Functions
-%include "include\string.asm" ; 
+%include "include\string.asm"
 %include "include\sounds.asm" ; Sound Functions
 %include "include\typedefs.asm" ; Definitions
 bits 16
@@ -22,6 +21,7 @@ dw BOOT_SINAGURE ; 0xAA15
 
 ## Compilation
 nasm [input file] -f bin -o [output file]
+qemu-system-i386 [output file] (if you using sounds.asm library add -s -soundhw pcspk to command.)
 
 ## References
 https://www.win.tue.nl/~aeb/linux/kbd/scancodes-1.html
