@@ -1,3 +1,6 @@
+%ifndef __CONSOLE_ASM__
+%define __CONSOLE_ASM__
+
 %macro clear_screen 1 ; Clear the console screen and set default color.
 	mov ah, 6
 	xor al, al
@@ -26,11 +29,13 @@
 	int 10h
 %endmacro
 
-%macro sleep 1
+%macro sleep 2
+	push dx
     mov cx, %1
-	mov dx, 10
+	mov dx, %2
 	mov ah, 86h
 	int 15h
+	pop dx
 %endmacro
 
 %macro move_cursor 2
@@ -64,3 +69,4 @@
     int 15h
 %endmacro
 
+%endif
