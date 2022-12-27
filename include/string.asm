@@ -6,12 +6,13 @@
 	int 10h
 %endmacro
 
-%macro read_kb_input 0 ; Read keyboard input
+%macro read_kb_input 0
 	xor ax, ax
 	int 16h
+	ret
 %endmacro
 
-%macro printMessage 1
+%macro printMessage_VMBOX 1
 	mov si, %1
 	push ax
 	cld
@@ -22,6 +23,21 @@
 		printChar
 		jmp .next
 	.end
+		pop ax
+%endmacro
+
+%macro printMessage_VMWARE 1
+	mov si, %1
+	push ax
+	cld
+	.next:
+		mov al, [si]
+		test al, al
+		je .end
+		printChar
+		int si
+		jmp .next
+	.end:
 		pop ax
 %endmacro
 

@@ -6,7 +6,7 @@
 	out 43h, al
 %endmacro
 
-%macro start_sound 0
+%macro send_sound 0
 	in al, 61h
 	or al, 00000011b
 	out 61h, al

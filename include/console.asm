@@ -1,12 +1,12 @@
 %ifndef __CONSOLE_ASM__
 %define __CONSOLE_ASM__
 
-%macro clear_screen 1 ; Clear the console screen and set default color.
+%macro clear_screen 1
 	mov ah, 6
 	xor al, al
 	mov bh, %1 ; bios color
 	xor cx, cx
-	mov dx, 184FH
+	mov dx, 184Fh
 	int 10h
 %endmacro
 
@@ -21,7 +21,7 @@
 	int 10h
 %endmacro
 
-%macro set_color 1
+%macro write_char_cursor 1
 	mov ah, 9h
 	mov cx, 1000h
 	mov al, 20h
@@ -51,22 +51,45 @@
 	move_cursor 0, 0
 %endmacro
 
-%macro reboot 1
-	mov ax, 40h
-	mov ds, ax
-	mov word [72h], %1
-	jmp 0FFFFh:0000h
-	;jmp 0xf000:0xfff0
-%endmacro
-
 %macro shutdown 0
     mov ax, 1h
     mov ax, ss
-    mov sp, 0xf000
-    mov ax, 0x5307
+    mov sp, 0F000h
+    mov ax, 5307h
     mov bx, 1h
     mov cx, 3h
     int 15h
 %endmacro
 
+%macro reset_registers 0
+    xor ax, ax
+    xor ds, ds ; data segment
+    xor es, es ; extra segment
+    xor ss, ss ; stack segment
+%endmacro
+
+%macro read_disk 4
+	mov ah, 2h
+	mov al, %1
+	mov bx, %2
+	mov ch, 0h
+	mov cl, 2h
+	mov dh, 0h
+	mov dl, %3
+	int 13h
+	jc %4
+%endmacro
+
+%macro halt 0
+	cli
+	hlt
+%endmacro
+
+%macro reboot 1
+	mov  AX, 0040h
+	mov  DS, AX
+	mov  word[0072h], %1
+	JMP  0FFFFh:0000h
+%endmacro
+	
 %endif
