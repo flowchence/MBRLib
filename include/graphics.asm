@@ -1,7 +1,8 @@
 %ifndef __GRAPHICS_ASM__
 %define __GRAPHICS_ASM__
 
-%macro set_pixel 3
+; Functions
+%macro setPixel 3
 	mov ah, 0CH
 	mov al, %1 ; Color
 	mov cx, %2 ; X
@@ -26,12 +27,26 @@
 	_drawFunc1 06h, 01h, %1, %2, %3, %2, %4
 %endmacro
 
-%macro writePixel 4
-	mov ah, 0Ch
-	mov al, %1
-	mov bh, %2
-	mov cx, %3
-	mov dx, %4
+%macro get_current_video_info 0
+	mov ah, 0Fh
+	int 10h
+%endmacro
+
+%macro getPixelColor 2
+	mov ah, 0Dh
+	mov cx, %1
+	mov dx, %2
+	int 10h
+%endmacro
+
+%macro read_overscan_register 0
+	mov ah, 1008h
+	int 10h
+%endmacro
+
+%macro read_palette_register 1
+	mov ah, 1007h
+	mov bl, %1
 	int 10h
 %endmacro
 
@@ -41,10 +56,28 @@
 	mov cx, %2
 	mov dx, %3
 	int 10h
-%endif
+%endmacro
 
 %macro select_graphics_palette 1
 	mov ah, 0Bh
 	mov bl, %1
 	int 10h
 %endmacro
+
+%macro writePixel 4
+	mov ah, 0Ch
+	mov al, %1
+	mov bh, %2
+	mov cx, %3
+	mov dx, %4
+	int 10h
+%endmacro
+
+%macro writePixelTTY 2
+	mov ah, 0Eh
+	mov al, %1
+	mov bl, %2 ; only in graphics mode
+	int 10h
+%endmacro
+
+%endif

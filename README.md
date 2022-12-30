@@ -10,7 +10,7 @@ A small assembly library I wrote specifically for anyone who doesn't understand 
 %include "include\typedefs.asm" ; Definitions
 bits 16
 ;cpu 8086
-org BIOS_MEMORY_ADDRESS
+org BIOS_MEMORY_ADDRESS ; 0x7c00
 jmp short main
 
 main:
@@ -21,43 +21,49 @@ dw BOOT_SINAGURE ; 0xAA15
 ```
 
 # Documentation
-| Function  | Description  | Parameters  | Mode  |  Library  |  Notes |
+| Function Definition  | Description  | Parameters  | Mode  |  Library  |  Notes |
 | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ |
-| checkIsPressedKey  | Check if key is pressed. | 3 (Key's scancode, ...)  |  Real mode  | string.asm  | - |
-| clear_screen  |  Clear the console screen and set default color. | 1 (Color)  |  Real mode  | console.asm | - |
-| clear_screen_set_video_mode  | Clear the console screen and set default video mode.  |  1 (video mode)  |  Real mode  |  console.asm  | - |
-| drawLine  |  Draw a line in screen.  |  4 (1 - background and foreground color, 2 - )  | Real mode  | graphics.asm  | - |
-| halt  |  Clear and halts CPU interrupts.  | 0  | Real mode  | console.asm  | - |
-| init_speakers  | Initialize and load speakers.  | 0  |  Real mode  | sounds.asm  | - |
-| init_randomizer  | Set seed and initialize the randomizer. | 1 (Seed)  |  Real mode  | string.asm  | - |
-| move_cursor  | Move cursor position  | 2 (X and Y)  |  Real mode  | console.asm  | - |
-| printChar  | Print current character in console. | 0  |  Real mode  | string.asm  | - |
-| read_disk  | Read a disk sector | 4  |  Real mode  | console.asm  | - |
-| read_pixel  | Read a graphic pixel. | 3 (video page, column and row) |  Real mode  | graphics.asm  | - |
-| read_timestamp  | Invoke rdtsc instruction. | 0  |  Real mode  | string.asm  | - |
-| reboot | Reboot the machine. | 1 (type boot) | - | console.asm | - |
-| reset_cursor  | Reset cursor position  | 0  |  Real mode  | console.asm  | - |
-| reset_registers  | Reset AX,DS,ES and SS registers. | 0  |  Real mode  | console.asm  | - |
-| send_sound  | Send a sound. | 0  |  Real mode  | sounds.asm  | - |
-| write_char_cursor  | Write Character/Attribute to Cursor Location.  | 1 (Color)  |  Real mode  | console.asm  | textmode, color |
-| set_video_mode  | Change video mode  | 1 (Video mode)  |  Real mode  | console.asm  | - |
-| set_pixel  | Set a pixel | 3 (Color, X and Y)  |  Real mode  | graphics.asm  | - |
-| shutdown  | Shutdown the machine.  | 0  |  Real mode  | console.asm  | - |
-| sleep  | Delay  | 2 (interval in microseconds)  |  Real mode  | console.asm  | - |
-| sound_frequency  | Change sound frequency | 1 (Frequency)  |  Real mode  | sounds.asm  | - |
-| sound_lsb  | - | 0  |  Real mode  | sounds.asm  | - |
-| sound_msb  | - | 0  |  Real mode  | sounds.asm  | - |
-| stop_sound  | Stop all sounds. | 0  |  Real mode  | sounds.asm  | - |
-| xorshift8  | - | 1 (Result)  |  Real mode  | string.asm  | - |
-| xorshift16  | - | 1 (Result)  |  Real mode  | string.asm  | - |
-| xorshift32  | -  | 1 (Result)  |  Real mode  | string.asm  | - |
-| writePixel  | Write a graphic pixel.  | 4 (Color, video page, column and row.)  |  Real mode  | graphics.asm  | - |
-
+|checkIsPressedKey|Check if key is pressed.|3 (Key's scancode, ...)|Real mode|string.asm|-|
+|clear_screen| Clear the console screen and set default color.   |1 (Bios color attribute) |  Real mode|console.asm|-|
+|get_cursor_pos_sz |Get cursor position and size.|1 (Page number)|Real mode |  console.asm|Return 4 registers (DH, DL, CH and CL).|
+|get_current_video_info |Get current video information.|0|Real mode |graphics.asm|Return 3 registers (AH, AL and BH).|
+|getPixelColor |Get color of a single pixel.|2 (Column and row)|Real mode |graphics.asm|Return 1 register (AL).|
+|halt|Clear and halts CPU interrupts.|0|Real mode|console.asm|-|
+|init_speakers|Initialize and load the PC speakers.|0|Real mode|sounds.asm|-|
+|printChar|Print current character in console.(Teletype output)|0|Real mode|string.asm|-|
+|printMessage|Print a string in console.|6 (Page number, message, color, message length, x and y)|Real mode|string.asm|-|
+|read_attrib_cursor|Read character and attribute at cursor position. |1 (Page number)| Real mode|console.asm|Return 2 registers (AH and AL).|
+|read_cpuinfo|Invoke cpuinfo instruction.|0|Real mode|random.asm|-|
+|readPixel|Read a graphic pixel. |3 (Page number, column and row)| Real mode|graphics.asm|Return 1 register (AL).|
+|read_timestamp|Invoke rdtsc instruction.|0|Real mode|random.asm|-|
+|reset_cursor|Reset cursor position|0|Real mode|console.asm|-|
+|reset_drive|Reset disk system|0| Real mode|console.asm|Return 1 register (AH).|
+|reset_registers|Reset AX,DS,ES and SS registers.|0|Real mode|console.asm|-|
+|select_graphics_palette|Select graphics palette or text border color. |1 (page number)|Real mode|graphics.asm|-|
+|select_video_page|Select active video page. |1|Real mode|console.asm|-|
+|setPixel|Set a pixel.|3 (Color, X and Y)|Real mode|graphics.asm|-|
+|set_cursor_sh_sz|Set cursor shape and size (Text-mode).|2 (Cursor start and bottom line).|Real mode|console.asm|-|
+|set_cursor_position|Set cursor position.|3 (Page number, row and column)|Real mode|console.asm|-|
+|set_video_mode|Set video mode.|1 (Video mode)|Real mode.|console.asm|-|
+|shutdown|Shutdown the machine.|0|Real mode|console.asm|-|
+|sleep|Delay|2(interval in microseconds)|Real mode|console.asm|-|
+|sound_frequency|Change frequency of current sound.|1 (Frequency)|Real mode|sounds.asm|-|
+|stop_sound|Stop all invoked sound.|0|Real mode|sounds.asm|-|
+|write_attrib_cursor|Write character and attribute at cursor position. |4 (Character, page number, attribute and number of times to display)|Real mode|console.asm|-|
+|write_char_cursor|Write character at curspor position.|3 (Character, page number and number of times to display.)|Real mode|console.asm|-|
+|writePixel|Write a graphic pixel. |4 (Color, page number column and row.)|Real mode|graphics.asm|-|
+|writePixelTTY|Write a graphic pixel as TTY. |2 (Character and foreground number.)|Real mode|graphics.asm|Second argument is about graphics mode only.|
+|xorshift8|8 bits xorshift|1|Real mode|string.asm|-|
+|xorshift16|16 bits xorshift|1|Real mode|string.asm|-|
+|xorshift32|32 bits xorshift|1|Real mode|string.asm|-|
 ## Compilation
 nasm [input file] -f bin -o [output file]
 qemu-system-i386 [output file] (if you using sounds.asm library add -s -soundhw pcspk to command.)
 
+or make (for linux)
+
 ## References
-https://www.win.tue.nl/~aeb/linux/kbd/scancodes-1.html
-http://www.columbia.edu/~em36/wpdos/videomodes.txt
-http://www.techhelpmanual.com/27-dos__bios___extensions_service_index.html
++ http://www.win.tue.nl/~aeb/linux/kbd/scancodes-1.html
++ http://www.columbia.edu/~em36/wpdos/videomodes.txt
++ http://www.techhelpmanual.com/27-dos__bios___extensions_service_index.html
++ http://www.eecg.utoronto.ca/~amza/www.mindsec.com/files/x86regs.html

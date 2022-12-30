@@ -5,6 +5,10 @@
 	rdtsc
 %endmacro
 
+%macro read_cpuinfo 0
+	cpuid
+%endmacro
+
 %macro init_randomizer 1
 	read_timestamp
 	mov word [%1], ax  ; seed
